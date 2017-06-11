@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent  { 
-  name = 'Jessica';
+  showingInstructions = false;
   plannedRoles: DefinedRole[] = [];
   roles: String[];
   selectedRole: String;
