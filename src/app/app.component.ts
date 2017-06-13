@@ -10,19 +10,23 @@ export class AppComponent  {
   plannedRoles: DefinedRole[] = [];
   roles: String[];
   selectedRole: String;
+  selectedProject: String;
   rolesToProjects: Map<String, String[]> = new Map();
   // NOTE:  One role that MUST always be filled is TIMER, so that is assumed...
   projectsToRequirements: Map<String, Requirement> = new Map();
   projectRequirements: Requirement[];
 
+  GE = 'General Evaluator';
+
   CL1 = 'CL1: Listening';
   CL2 = 'CL2: Critical Thinking';
   CL3 = 'CL3: Giving Feedback';
   CL4 = 'CL4: Time Management';
-  CL5 = 'CL5: Planning & Implementation';
+  CL5 = 'CL5: Planning and Implementation';
   CL7 = 'CL7: Facilitation';
-  CL8 = 'CL8:  Motivation';
-  CL10 = 'CL10:  Team Building';
+  // NOTE:  Having extra spaces breaks matching up fields to UI because UI only shows one space!
+  CL8 = 'CL8: Motivation';
+  CL10 = 'CL10: Team Building';
   meetingRolesForCL10 = false;
 
   constructor(){
@@ -44,17 +48,18 @@ export class AppComponent  {
     this.rolesToProjects.set('Table Topics Speaker', [this.CL1]);
     this.rolesToProjects.set('Ah-Counter', [this.CL1]);
     this.rolesToProjects.set('Grammarian',
-      [this.CL4, this.CL1, this.CL2, this.CL3]);
+      [this.CL3, this.CL2, this.CL1, this.CL4]);
     this.rolesToProjects.set('Speech Evaluator',
-      [this.CL8, this.CL1,this.CL2, this.CL3]);
-    this.rolesToProjects.set('Topicsmaster', [this.CL4, this.CL7, this.CL5]);
-    this.rolesToProjects.set('General Evaluator',
-      [this.CL7, this.CL5, this.CL2, this.CL8, this.CL3]);
+      [this.CL3, this.CL2, this.CL1, this.CL8]);
+    this.rolesToProjects.set('Topicsmaster', [this.CL5, this.CL7, this.CL4]);
+    this.rolesToProjects.set(this.GE,
+      [this.CL3, this.CL8, this.CL2, this.CL5, this.CL7]);
     this.rolesToProjects.set('Toastmaster',
-      [this.CL4, this.CL7, this.CL5, this.CL8]);   
+      [this.CL8, this.CL5, this.CL7,this.CL4]);   
 
     this.determineNeededRoles();
     this.selectedRole = this.roles[0];
+    this.selectRecommendedProject(this.selectedRole);
     this.plannedRoles.push(new DefinedRole('Timer', this.CL4));
   }
 
@@ -67,8 +72,16 @@ export class AppComponent  {
     });
   }
 
-  addRole(role: String) {
-    const projectToUse = this.rolesToProjects.get(role).pop();
+  addRole(role: String, projectToUse: String) {
+    const possibleProjectsForRole: String[] = this.rolesToProjects.get(role);
+    const indexOfProjectToUse = possibleProjectsForRole.indexOf(projectToUse);
+    if(indexOfProjectToUse === -1){
+      console.error(`Could not find project ${projectToUse} for role ${role}'s list ${possibleProjectsForRole} so using default instead`);
+      projectToUse = this.rolesToProjects.get(role).pop();
+    } else {
+      this.rolesToProjects.get(role).splice(indexOfProjectToUse, 1);
+    }
+    
     this.plannedRoles.push(new DefinedRole(role, projectToUse));
 
     this.projectsToRequirements.get(projectToUse).numFilled++;
@@ -86,21 +99,35 @@ export class AppComponent  {
     if(this.roles.indexOf(this.selectedRole) === -1){
       this.selectedRole = this.roles[0];
     }
+    this.selectRecommendedProject(this.selectedRole);
+
+  }
+
+  selectRecommendedProject(forRole: String){
+    this.selectedProject = this.rolesToProjects.get(forRole)[0];
+  }
+
+  // TODO CODING Figure out what is going wrong when Toastmaster is selected!
+  roleChanged(ngChangeEvent){
+    console.log(`Role changed to ${ngChangeEvent}`);
+    this.selectRecommendedProject(ngChangeEvent);
+    console.log(`Recommended Project is: ${this.selectedProject}`);
   }
 
   doMeetingRolesForCL10(){
-    this.plannedRoles.push(new DefinedRole('Toastmaster', this.CL10));
-    this.plannedRoles.push(new DefinedRole('General Evaluator', this.CL10));
-
     const requirementForCL10 = new Requirement(this.CL10, 2);
     requirementForCL10.numFilled = 2;
+    this.projectsToRequirements.set(this.CL10, requirementForCL10);
     this.projectRequirements.push(requirementForCL10);
+
+    this.plannedRoles.push(new DefinedRole('Toastmaster', this.CL10));
+    this.plannedRoles.push(new DefinedRole('General Evaluator', this.CL10));
 
     this.meetingRolesForCL10 = true;
   }
 }
 
-class DefinedRole {
+export class DefinedRole {
   public role: String
   public project: String
   constructor(role: String, project: String){
@@ -116,5 +143,9 @@ class Requirement {
   constructor(project: String, numNeeded: number){
     this.project = project;
     this.numNeeded = numNeeded;
+  }
+
+  isComplete(){
+    return this.numFilled === this.numNeeded;
   }
 }

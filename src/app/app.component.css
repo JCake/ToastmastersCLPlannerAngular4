@@ -1,0 +1,21 @@
+.complete {
+    background-color: lightgreen
+}
+
+.roleSelect {
+    min-width: 10em;
+    max-width: 30em;
+    float: left;
+}
+
+.projectSelect {
+    min-width: 15em;
+    max-width: 30em;
+    float: left;
+}
+
+.addButton {
+    min-width: 20em;
+    max-width: 40em;
+    float: left;
+}

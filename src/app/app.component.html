@@ -2,8 +2,8 @@
 <button *ngIf="!showingInstructions" (click)="showingInstructions = true">See Instructions</button>
 <button *ngIf="showingInstructions" (click)="showingInstructions = false">Hide Instructions</button>
 <div *ngIf="showingInstructions">
-    From the dropdown below, select a role you would like to fill towards getting your CL and click "Add Role". This application will automatically suggest what CL project to get evaluated on for that role. Once all meeting role requirements are complete,
-    the dropdown will go away. See the bottom of the page for additional CL requirements beyond meeting roles.
+    From the first dropdown below, select a role you would like to fill towards getting your CL. The second dropdown shows what projects have that role as a possible requirement. The recommended project to use is selected by default. You may keep the default
+    project or select a different project to use if desired. Click "Add Role". Once all meeting role requirements are complete, the dropdowns will go away. See the bottom of the page for additional CL requirements beyond meeting roles.
     <br/>
 </div>
 
@@ -13,13 +13,19 @@
             <th>Meeting Date</th>
             <th>Meeting Role</th>
             <th>Project</th>
+            <!-- TODO Add pages in CL manual -->
         </tr>
     </thead>
     <tbody>
         <tr *ngFor="let plannedRole of plannedRoles">
             <td><input type="date" /></td>
             <td>{{plannedRole.role}}</td>
-            <td>{{plannedRole.project}}</td>
+            <td>
+                <span [ngClass]="{'complete': projectsToRequirements.get(plannedRole.project).isComplete()}">
+                {{plannedRole.project}}
+                </span>
+            </td>
+            <!-- TODO Add pages in CL manual -->
         </tr>
     </tbody>
 </table>
@@ -27,11 +33,20 @@
 <br/>
 
 <div *ngIf="roles.length > 0; else elseBlock">
-    <select [(ngModel)]="selectedRole">
-        <option *ngFor="let role of roles">{{role}}</option>
-    </select>
-    <button (click)="addRole(selectedRole)">Add Role</button>
-
+    <div class="roleSelect">
+        <select [(ngModel)]="selectedRole" (ngModelChange)="roleChanged($event)">
+            <option *ngFor="let role of roles">{{role}}</option>
+        </select>
+    </div>
+    <div class="projectSelect">
+        <select [(ngModel)]="selectedProject">
+            <option *ngFor="let project of rolesToProjects.get(selectedRole)">{{project}}</option>
+        </select>
+    </div>
+    <div class="addButton">
+        <button (click)="addRole(selectedRole, selectedProject)">Add Role</button>
+    </div>
+    <br/>
 </div>
 <ng-template #elseBlock>
     <h3>All Required Meeting Roles Filled! See bottom of page for additional requirements.</h3>
@@ -40,7 +55,9 @@
 <h2>Above fulfills:</h2>
 Timer role required for CL4: Time Management, plus:
 <div *ngFor="let projectReq of projectRequirements">
-    {{projectReq.project}}: {{projectReq.numFilled}} of {{projectReq.numNeeded}} roles needed.
+    <span [ngClass]="{'complete': projectReq.isComplete()}">
+        {{projectReq.project}}: {{projectReq.numFilled}} of {{projectReq.numNeeded}} needed roles filled.
+    </span>
 </div>
 
 <h2>Also must:</h2>
