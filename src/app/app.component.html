@@ -33,20 +33,22 @@
 <br/>
 
 <div *ngIf="roles.length > 0; else elseBlock">
-    <div class="roleSelect">
-        <select [(ngModel)]="selectedRole" (ngModelChange)="roleChanged($event)">
+    <form #f="ngForm" (ngSubmit)="addRole(selectedRole, selectedProject)" novalidate>
+        <div class="roleSelect">
+            <select [(ngModel)]="selectedRole" (ngModelChange)="roleChanged($event)" name="roleSelect">
             <option *ngFor="let role of roles">{{role}}</option>
         </select>
-    </div>
-    <div class="projectSelect">
-        <select [(ngModel)]="selectedProject">
+        </div>
+        <div class="projectSelect">
+            <select [(ngModel)]="selectedProject" name="projectSelect">
             <option *ngFor="let project of rolesToProjects.get(selectedRole)">{{project}}</option>
         </select>
-    </div>
-    <div class="addButton">
-        <button (click)="addRole(selectedRole, selectedProject)">Add Role</button>
-    </div>
-    <br/>
+        </div>
+        <div class="addButton">
+            <button>Add Role</button>
+        </div>
+        <br/>
+    </form>
 </div>
 <ng-template #elseBlock>
     <h3>All Required Meeting Roles Filled! See bottom of page for additional requirements.</h3>
