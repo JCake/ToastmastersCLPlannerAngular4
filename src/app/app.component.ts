@@ -52,10 +52,10 @@ export class AppComponent  {
     this.rolesToProjects.set('Speech Evaluator',
       [this.CL3, this.CL2, this.CL1, this.CL8]);
     this.rolesToProjects.set('Topicsmaster', [this.CL5, this.CL7, this.CL4]);
+    this.rolesToProjects.set('Toastmaster',
+      [this.CL8, this.CL5, this.CL7,this.CL4]); 
     this.rolesToProjects.set(this.GE,
       [this.CL3, this.CL8, this.CL2, this.CL5, this.CL7]);
-    this.rolesToProjects.set('Toastmaster',
-      [this.CL8, this.CL5, this.CL7,this.CL4]);   
 
     this.determineNeededRoles();
     this.selectedRole = this.roles[0];
