@@ -18,3 +18,9 @@
     max-width: 40em;
     float: left;
 }
+
+@media print {
+    .hideForPrint {
+        display: none;
+    }
+}

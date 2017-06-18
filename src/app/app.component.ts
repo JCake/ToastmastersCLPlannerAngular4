@@ -23,20 +23,31 @@ export class AppComponent  {
   CL3 = 'CL3: Giving Feedback';
   CL4 = 'CL4: Time Management';
   CL5 = 'CL5: Planning and Implementation';
+  CL6 = 'CL6: Organization and Delegation';
   CL7 = 'CL7: Facilitation';
   // NOTE:  Having extra spaces breaks matching up fields to UI because UI only shows one space!
   CL8 = 'CL8: Motivation';
+  CL9 = 'CL9: Mentoring';
   CL10 = 'CL10: Team Building';
-  meetingRolesForCL10 = false;
+  selectedForCL10 = false;
 
   constructor(){
     this.projectsToRequirements.set(this.CL1, new Requirement(this.CL1, 3));
     this.projectsToRequirements.set(this.CL2, new Requirement(this.CL2, 2));
     this.projectsToRequirements.set(this.CL3, new Requirement(this.CL3, 3));
-    this.projectsToRequirements.set(this.CL4, new Requirement(this.CL4, 1)); //NOTE:  Apart from Timer
+    const project4Req = new Requirement(this.CL4, 1);
+    project4Req.preText = 'Timer role plus '; // Already added to plannedRoles below
+    this.projectsToRequirements.set(this.CL4, project4Req);
     this.projectsToRequirements.set(this.CL5, new Requirement(this.CL5, 3));
+    const project6Req = new Requirement(this.CL6, 1);
+    project6Req.numFilled = 1; // Because already aldded to plannedRoles below
+    this.projectsToRequirements.set(this.CL6, project6Req);
     this.projectsToRequirements.set(this.CL7, new Requirement(this.CL7, 2));
-    this.projectsToRequirements.set(this.CL8, new Requirement(this.CL8, 2)); //NOTE:  In addition to chairing
+    const project8Req = new Requirement(this.CL8, 2);
+    project8Req.preText = 'Chair position plus '; // Already added to plannedRoles below
+    this.projectsToRequirements.set(this.CL8, project8Req);
+    this.projectsToRequirements.set(this.CL9, new Requirement(this.CL9, 1));
+    this.projectsToRequirements.set(this.CL10, new Requirement(this.CL10, 2)); // Default to meeting roles
 
     this.projectRequirements = [];
     this.projectsToRequirements.forEach((value, key) => {
@@ -56,11 +67,15 @@ export class AppComponent  {
       [this.CL8, this.CL5, this.CL7,this.CL4]); 
     this.rolesToProjects.set(this.GE,
       [this.CL3, this.CL8, this.CL2, this.CL5, this.CL7]);
+    this.rolesToProjects.set('Mentor New or Current Member', [this.CL9]);
+    this.rolesToProjects.set('Serve on HPL Committee', [this.CL9]);
 
     this.determineNeededRoles();
     this.selectedRole = this.roles[0];
     this.selectRecommendedProject(this.selectedRole);
     this.plannedRoles.push(new DefinedRole('Timer', this.CL4));
+    this.plannedRoles.push(new DefinedRole('Help with contest, event, campaign, newsletter, or website', this.CL6));
+    this.plannedRoles.push(new DefinedRole('Chair Membership or PR Campaign', this.CL8));
   }
 
   determineNeededRoles(){
@@ -114,16 +129,24 @@ export class AppComponent  {
     console.log(`Recommended Project is: ${this.selectedProject}`);
   }
 
+  chairForCL10(){
+    const requirementForCL10 = this.projectsToRequirements.get(this.CL10);
+    requirementForCL10.numNeeded = 1; // Chairing means only one task is needed
+    requirementForCL10.numFilled = 1;
+
+    this.plannedRoles.push(new DefinedRole('Chair contest, event, campaign, newsletter, or website', this.CL10));
+  
+    this.selectedForCL10 = true;
+  }
+
   doMeetingRolesForCL10(){
-    const requirementForCL10 = new Requirement(this.CL10, 2);
+    const requirementForCL10 = this.projectsToRequirements.get(this.CL10);
     requirementForCL10.numFilled = 2;
-    this.projectsToRequirements.set(this.CL10, requirementForCL10);
-    this.projectRequirements.push(requirementForCL10);
 
     this.plannedRoles.push(new DefinedRole('Toastmaster', this.CL10));
     this.plannedRoles.push(new DefinedRole('General Evaluator', this.CL10));
 
-    this.meetingRolesForCL10 = true;
+    this.selectedForCL10 = true;
   }
 }
 
@@ -140,6 +163,7 @@ class Requirement {
   public project: String;
   public numFilled: number = 0;
   public numNeeded: number;
+  public preText: String; // Supplied if additional requirementes
   constructor(project: String, numNeeded: number){
     this.project = project;
     this.numNeeded = numNeeded;

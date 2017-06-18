@@ -1,24 +1,26 @@
 <h1>Toastmaster CL Planner</h1>
-<button *ngIf="!showingInstructions" (click)="showingInstructions = true">See Instructions</button>
-<button *ngIf="showingInstructions" (click)="showingInstructions = false">Hide Instructions</button>
-<div *ngIf="showingInstructions">
-    From the first dropdown below, select a role you would like to fill towards getting your CL. The second dropdown shows what projects have that role as a possible requirement. The recommended project to use is selected by default. You may keep the default
-    project or select a different project to use if desired. Click "Add Role". Once all meeting role requirements are complete, the dropdowns will go away. See the bottom of the page for additional CL requirements beyond meeting roles.
-    <br/>
+<div class="hideForPrint">
+    <button *ngIf="!showingInstructions" (click)="showingInstructions = true">See Instructions</button>
+    <button *ngIf="showingInstructions" (click)="showingInstructions = false">Hide Instructions</button>
+    <div *ngIf="showingInstructions">
+        From the first dropdown below, select a role you would like to fill towards getting your CL. The second dropdown shows what projects have that role as a possible requirement. The recommended project to use is selected by default. You may keep the default
+        project or select a different project to use if desired. Click "Add Role". Also make sure to select an option for CL 10. Once all requirements are complete, the dropdowns and buttons will go away.
+        <br/>
+    </div>
 </div>
 
 <table border="1">
     <thead>
         <tr>
-            <th>Meeting Date</th>
-            <th>Meeting Role</th>
+            <th>Meeting/Completion Date</th>
+            <th>Task/Meeting Role</th>
             <th>Project</th>
             <!-- TODO Add pages in CL manual -->
         </tr>
     </thead>
     <tbody>
         <tr *ngFor="let plannedRole of plannedRoles">
-            <td><input type="date" /></td>
+            <td><input type="date" [(ngModel)]="plannedRole.date" [ngClass]="{'hideForPrint': !plannedRole.date}" /></td>
             <td>{{plannedRole.role}}</td>
             <td>
                 <span [ngClass]="{'complete': projectsToRequirements.get(plannedRole.project).isComplete()}">
@@ -32,8 +34,8 @@
 
 <br/>
 
-<div *ngIf="roles.length > 0; else elseBlock">
-    <form #f="ngForm" (ngSubmit)="addRole(selectedRole, selectedProject)" novalidate>
+<div *ngIf="(roles.length > 0 || !selectedForCL10); else elseBlock">
+    <form #f="ngForm" (ngSubmit)="addRole(selectedRole, selectedProject)" novalidate *ngIf="roles.length > 0">
         <div class="roleSelect">
             <select [(ngModel)]="selectedRole" (ngModelChange)="roleChanged($event)" name="roleSelect">
             <option *ngFor="let role of roles">{{role}}</option>
@@ -49,27 +51,24 @@
         </div>
         <br/>
     </form>
+    <br/>
+    <div class="row" *ngIf="!selectedForCL10">
+        <div class="columns">
+            For CL 10:
+            <button (click)="doMeetingRolesForCL10()">Click here</button> to do Toastmaster + General Evaluator meeting roles OR
+            <button (click)="chairForCL10()">Click here</button> to chair an event.
+        </div>
+    </div>
 </div>
 <ng-template #elseBlock>
-    <h3>All Required Meeting Roles Filled! See bottom of page for additional requirements.</h3>
+    <h3>All Requirements Met!</h3>
 </ng-template>
 
-<h2>Above fulfills:</h2>
-Timer role required for CL4: Time Management, plus:
-<div *ngFor="let projectReq of projectRequirements">
-    <span [ngClass]="{'complete': projectReq.isComplete()}">
-        {{projectReq.project}}: {{projectReq.numFilled}} of {{projectReq.numNeeded}} needed roles filled.
+<div [ngClass]="{'hideForPrint': roles.length === 0 && selectedForCL10}">
+    <h2>Above fulfills:</h2>
+    <div *ngFor="let projectReq of projectRequirements">
+        <span [ngClass]="{'complete': projectReq.isComplete()}">
+        {{projectReq.project}}: {{projectReq.preText}} {{projectReq.numFilled}} of {{projectReq.numNeeded}} needed roles filled.
     </span>
+    </div>
 </div>
-
-<!-- TODO Find a way to add the below into the table above? -->
-<h2>Also must:</h2>
-
-<li>Help Organize a speech contest, special event, membership campaign or contest, or PR campaign, help produce newsletter, or help with website for CL6: Organization and Delegation</li>
-
-<li>Chair a Membership campaign or contest or PR campaign for {{CL8}}</li>
-
-<li>Mentor new member or existing member, or serve on HPL committee for CL9: Mentoring</li>
-
-<li *ngIf="!meetingRolesForCL10">Chair a speech contest, special event, membership campaign or contest, or PR campaign, edit a newsletter, or serve as webmaster for {{CL10}} OR <button (click)="doMeetingRolesForCL10()">Click here</button> to do Toastmaster + General Evaluator meeting
-    roles instead</li>
