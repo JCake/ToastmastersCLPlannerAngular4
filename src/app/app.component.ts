@@ -148,6 +148,20 @@ export class AppComponent  {
 
     this.selectedForCL10 = true;
   }
+
+  buildSamplePlan(){
+    if(!this.selectedForCL10){
+      this.doMeetingRolesForCL10();
+    }
+    while(this.roles.length > 0){
+      this.addRole(this.roles[0], null);  
+    }
+    
+  }
+
+  print(){
+    window.print();
+  }
 }
 
 export class DefinedRole {

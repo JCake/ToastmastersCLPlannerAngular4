@@ -1,4 +1,6 @@
-<h1>Toastmaster CL Planner</h1>
+<h1>Toastmaster CL Planner
+    <button class="hideForPrint" *ngIf="roles.length > 0" (click)="buildSamplePlan()">Build Plan for Me</button>
+</h1>
 <div class="hideForPrint">
     <button *ngIf="!showingInstructions" (click)="showingInstructions = true">See Instructions</button>
     <button *ngIf="showingInstructions" (click)="showingInstructions = false">Hide Instructions</button>
@@ -62,6 +64,7 @@
 </div>
 <ng-template #elseBlock>
     <h3>All Requirements Met!</h3>
+    <button class="hideForPrint" (click)="print()">Print Your Plan</button>
 </ng-template>
 
 <div [ngClass]="{'hideForPrint': roles.length === 0 && selectedForCL10}">
