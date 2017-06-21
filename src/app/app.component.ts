@@ -16,7 +16,10 @@ export class AppComponent  {
   projectsToRequirements: Map<String, Requirement> = new Map();
   projectRequirements: Requirement[];
 
+  TM = 'Toastmaster';
   GE = 'General Evaluator';
+  evaluator = 'Speech Evaluator';
+  TTM = 'Topicsmaster';
 
   CL1 = 'CL1: Listening';
   CL2 = 'CL2: Critical Thinking';
@@ -60,11 +63,10 @@ export class AppComponent  {
     this.rolesToProjects.set('Ah-Counter', [this.CL1]);
     this.rolesToProjects.set('Grammarian',
       [this.CL3, this.CL2, this.CL1, this.CL4]);
-    this.rolesToProjects.set('Speech Evaluator',
+    this.rolesToProjects.set(this.evaluator,
       [this.CL3, this.CL2, this.CL1, this.CL8]);
-    this.rolesToProjects.set('Topicsmaster', [this.CL5, this.CL7, this.CL4]);
-    this.rolesToProjects.set('Toastmaster',
-      [this.CL8, this.CL5, this.CL7,this.CL4]); 
+    this.rolesToProjects.set(this.TTM, [this.CL5, this.CL7, this.CL4]);
+    this.rolesToProjects.set(this.TM, [this.CL8, this.CL5, this.CL7,this.CL4]); 
     this.rolesToProjects.set(this.GE,
       [this.CL3, this.CL8, this.CL2, this.CL5, this.CL7]);
     this.rolesToProjects.set('Mentor New or Current Member', [this.CL9]);
@@ -143,10 +145,42 @@ export class AppComponent  {
     const requirementForCL10 = this.projectsToRequirements.get(this.CL10);
     requirementForCL10.numFilled = 2;
 
-    this.plannedRoles.push(new DefinedRole('Toastmaster', this.CL10));
+    this.plannedRoles.push(new DefinedRole(this.TM, this.CL10));
     this.plannedRoles.push(new DefinedRole('General Evaluator', this.CL10));
 
     this.selectedForCL10 = true;
+  }
+
+  findPage(role: DefinedRole){
+    switch(role.project) {
+      case this.CL1:
+        return role.role === this.evaluator || role.role === 'Table Topics Speaker' ? '8' : '9';
+      case this.CL2:
+        return role.role === this.GE ? '13' : '12';
+      case this.CL3:
+        return role.role === this.GE ? '18' : '17';
+      case this.CL4:
+        if(role.role === this.TM){
+          return '22';
+        } else {
+          return role.role === this.TTM ? '24' : '23';
+        }
+      case this.CL5:
+        return role.role === this.GE || role.role === 'Speaker' ? '27' : '28';
+      case this.CL6:
+        return '32-34';
+      case this.CL7:
+        return role.role === this.TM || role.role === this.GE ? '38' : '39';
+      case this.CL8:
+        return role.role === this.TM || role.role === this.evaluator ? '43' : '44-45';
+      case this.CL9:
+        return '48-49';
+      case this.CL10:
+        return role.role === this.TM || role.role === this.GE ? '53' : '54-56';
+      default:
+        return '';
+    }
+
   }
 
   buildSamplePlan(){
