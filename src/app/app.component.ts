@@ -76,8 +76,8 @@ export class AppComponent  {
     this.selectedRole = this.roles[0];
     this.selectRecommendedProject(this.selectedRole);
     this.plannedRoles.push(new DefinedRole('Timer', this.CL4));
-    this.plannedRoles.push(new DefinedRole('Help with contest, event, campaign, newsletter, or website', this.CL6));
-    this.plannedRoles.push(new DefinedRole('Chair Membership or PR Campaign', this.CL8));
+    this.plannedRoles.push(new DefinedRole('Help with club contest, event, campaign, newsletter, or website', this.CL6));
+    this.plannedRoles.push(new DefinedRole('Chair Club Membership or PR Campaign', this.CL8));
   }
 
   determineNeededRoles(){
@@ -136,7 +136,7 @@ export class AppComponent  {
     requirementForCL10.numNeeded = 1; // Chairing means only one task is needed
     requirementForCL10.numFilled = 1;
 
-    this.plannedRoles.push(new DefinedRole('Chair contest, event, campaign, newsletter, or website', this.CL10));
+    this.plannedRoles.push(new DefinedRole('Chair club contest, event, campaign, newsletter, or website', this.CL10));
   
     this.selectedForCL10 = true;
   }
